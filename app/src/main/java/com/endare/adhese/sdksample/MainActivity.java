@@ -1,5 +1,6 @@
 package com.endare.adhese.sdksample;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -14,6 +15,7 @@ import com.thedeanda.lorem.LoremIpsum;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,10 +50,31 @@ public class MainActivity extends AppCompatActivity {
         firstAdView = findViewById(R.id.firstAd);
         secondAdView = findViewById(R.id.secondAd);
 
-        firstArticle.setText(LoremIpsum.getInstance().getParagraphs(3, 3));
+        firstArticle.setText(LoremIpsum.getInstance().getParagraphs(7, 7));
         secondArticle.setText(LoremIpsum.getInstance().getParagraphs(3, 3));
 
         snackbarManager = new SnackbarManager(this, rootLayout);
+
+        firstAdView.setAdLoadedListener(new AdView.OnAdLoadedListener() {
+            @Override
+            public void onAdLoaded(@NonNull AdView adView) {
+                snackbarManager.showInfo(String.format("Slot %s was loaded", firstAdView.getAd().getSlotName()));
+            }
+        });
+
+        firstAdView.setTrackingNotifiedListener(new AdView.OnTrackerNotifiedListener() {
+            @Override
+            public void onTrackerNotified(@NonNull AdView adView) {
+                snackbarManager.showInfo(String.format("Slot %s tracker was called.", firstAdView.getAd().getSlotName()));
+            }
+        });
+
+        firstAdView.setTrackingNotifiedListener(new AdView.OnTrackerNotifiedListener() {
+            @Override
+            public void onTrackerNotified(@NonNull AdView adView) {
+                snackbarManager.showInfo(String.format("Slot %s view impression was called.", firstAdView.getAd().getSlotName()));
+            }
+        });
     }
 
     @Override
@@ -76,5 +99,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 }
