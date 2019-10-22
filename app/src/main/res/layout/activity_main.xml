@@ -12,6 +12,14 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp">
 
+        <com.endare.adhese.sdk.views.AdView
+            android:id="@+id/billboardAd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp">
+        </com.endare.adhese.sdk.views.AdView>
+
         <TextView
             android:id="@+id/firstArticle"
             android:layout_width="match_parent"
@@ -21,11 +29,14 @@
         </TextView>
 
         <com.endare.adhese.sdk.views.AdView
-            android:id="@+id/firstAd"
+            android:id="@+id/halfPageAd"
+            android:layout_gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginEnd="64dp">
         </com.endare.adhese.sdk.views.AdView>
-        
+
         <TextView
             android:id="@+id/secondArticle"
             android:layout_width="match_parent"
@@ -33,12 +44,6 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp">
         </TextView>
-
-        <com.endare.adhese.sdk.views.AdView
-            android:id="@+id/secondAd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </com.endare.adhese.sdk.views.AdView>
 
     </LinearLayout>
 

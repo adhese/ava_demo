@@ -1,6 +1,5 @@
 package com.endare.adhese.sdksample;
 
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -16,15 +15,16 @@ import com.thedeanda.lorem.LoremIpsum;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdView.OnAdLoadedListener, AdView.OnViewImpressionNotifiedListener, AdView.OnTrackerNotifiedListener {
 
     private SnackbarManager snackbarManager;
     private TextView firstArticle;
     private TextView secondArticle;
-    private AdView firstAdView;
-    private AdView secondAdView;
+    private AdView billboardAdView;
+    private AdView halfPageAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
                 .withAccount("_demo_ster_a_")
                 .forLocation("demo")
                 .addSlot("billboard")
-                .addSlot("imu")
+                .addSlot("halfpage")
                 .withCookieMode(CookieMode.ALL)
                 .enableDebugMode()
                 .build();
@@ -47,34 +47,20 @@ public class MainActivity extends AppCompatActivity {
         View rootLayout = findViewById(android.R.id.content);
         firstArticle = findViewById(R.id.firstArticle);
         secondArticle = findViewById(R.id.secondArticle);
-        firstAdView = findViewById(R.id.firstAd);
-        secondAdView = findViewById(R.id.secondAd);
+        billboardAdView = findViewById(R.id.billboardAd);
+        halfPageAdView = findViewById(R.id.halfPageAd);
 
         firstArticle.setText(LoremIpsum.getInstance().getParagraphs(7, 7));
         secondArticle.setText(LoremIpsum.getInstance().getParagraphs(3, 3));
 
         snackbarManager = new SnackbarManager(this, rootLayout);
 
-        firstAdView.setAdLoadedListener(new AdView.OnAdLoadedListener() {
-            @Override
-            public void onAdLoaded(@NonNull AdView adView) {
-                snackbarManager.showInfo(String.format("Slot %s was loaded", firstAdView.getAd().getSlotName()));
-            }
-        });
-
-        firstAdView.setTrackingNotifiedListener(new AdView.OnTrackerNotifiedListener() {
-            @Override
-            public void onTrackerNotified(@NonNull AdView adView) {
-                snackbarManager.showInfo(String.format("Slot %s tracker was called.", firstAdView.getAd().getSlotName()));
-            }
-        });
-
-        firstAdView.setTrackingNotifiedListener(new AdView.OnTrackerNotifiedListener() {
-            @Override
-            public void onTrackerNotified(@NonNull AdView adView) {
-                snackbarManager.showInfo(String.format("Slot %s view impression was called.", firstAdView.getAd().getSlotName()));
-            }
-        });
+        billboardAdView.setAdLoadedListener(this);
+        billboardAdView.setTrackingNotifiedListener(this);
+        billboardAdView.setViewImpressionNotifiedListener(this);
+        halfPageAdView.setAdLoadedListener(this);
+        halfPageAdView.setTrackingNotifiedListener(this);
+        halfPageAdView.setViewImpressionNotifiedListener(this);
     }
 
     @Override
@@ -89,17 +75,46 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (ads.size() == 1) {
-                    firstAdView.setAd(ads.get(0));
+                Ad billboard = findByType(ads, "billboard");
+                Ad halfPage = findByType(ads, "halfpage");
+
+                if (billboard != null) {
+                    billboardAdView.setAd(billboard);
+                } else {
+                    billboardAdView.setVisibility(View.GONE);
                 }
 
-                if (ads.size() == 2) {
-                    secondAdView.setAd(ads.get(1));
+                if (halfPage != null) {
+                    halfPageAdView.setAd(halfPage);
+                } else {
+                    halfPageAdView.setVisibility(View.GONE);
                 }
             }
         });
     }
 
+    private @Nullable
+    Ad findByType(List<Ad> ads, String adType) {
+        for (Ad ad : ads) {
+            if (ad.getAdType().equals(adType)) {
+                return ad;
+            }
+        }
+        return null;
+    }
 
+    @Override
+    public void onAdLoaded(@NonNull AdView adView) {
+        snackbarManager.showInfo(String.format("Slot %s was loaded", adView.getAd().getSlotName()));
+    }
 
+    @Override
+    public void onViewImpressionNotified(@NonNull AdView adView) {
+        snackbarManager.showInfo(String.format("Slot %s view impression was called.", adView.getAd().getSlotName()));
+    }
+
+    @Override
+    public void onTrackerNotified(@NonNull AdView adView) {
+        snackbarManager.showInfo(String.format("Slot %s tracker was called.", adView.getAd().getSlotName()));
+    }
 }
