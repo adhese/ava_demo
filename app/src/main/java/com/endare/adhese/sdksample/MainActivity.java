@@ -52,11 +52,10 @@ public class MainActivity extends AppCompatActivity implements
                 .addSlot("billboard")
                 .addSlot("halfpage")
                 .withCookieMode(CookieMode.ALL)
-                .enableDebugMode()
                 .build();
 
         // Init the SDK
-        Adhese.initialise(this);
+        Adhese.initialise(this, true);
 
         View rootLayout = findViewById(android.R.id.content);
         firstArticle = findViewById(R.id.firstArticle);
