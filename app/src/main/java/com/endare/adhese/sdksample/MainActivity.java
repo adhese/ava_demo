@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
 
         // Init the SDK
-        Adhese.initialise(this, options);
+        Adhese.initialise(this);
 
         View rootLayout = findViewById(android.R.id.content);
         firstArticle = findViewById(R.id.firstArticle);
