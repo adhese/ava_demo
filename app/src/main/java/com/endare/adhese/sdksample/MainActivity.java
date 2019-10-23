@@ -2,7 +2,6 @@ package com.endare.adhese.sdksample;
 
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -11,6 +10,7 @@ import com.endare.adhese.sdk.Ad;
 import com.endare.adhese.sdk.Adhese;
 import com.endare.adhese.sdk.AdheseOptions;
 import com.endare.adhese.sdk.api.APICallback;
+import com.endare.adhese.sdk.api.APIError;
 import com.endare.adhese.sdk.parameters.CookieMode;
 import com.endare.adhese.sdk.views.AdView;
 import com.thedeanda.lorem.LoremIpsum;
@@ -24,7 +24,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
-public class MainActivity extends AppCompatActivity implements AdView.OnAdLoadedListener, AdView.OnViewImpressionNotifiedListener, AdView.OnTrackerNotifiedListener {
+public class MainActivity extends AppCompatActivity implements
+        AdView.OnAdLoadedListener,
+        AdView.OnViewImpressionNotifiedListener,
+        AdView.OnTrackerNotifiedListener,
+        AdView.OnErrorListener,
+        AdView.OnAdClickListener {
 
     private SnackbarManager snackbarManager;
     private TextView firstArticle;
@@ -68,9 +73,13 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
         billboardAdView.setAdLoadedListener(this);
         billboardAdView.setTrackingNotifiedListener(this);
         billboardAdView.setViewImpressionNotifiedListener(this);
+        billboardAdView.setOnAdClickListener(this);
+        billboardAdView.setErrorListener(this);
         halfPageAdView.setAdLoadedListener(this);
         halfPageAdView.setTrackingNotifiedListener(this);
         halfPageAdView.setViewImpressionNotifiedListener(this);
+        halfPageAdView.setErrorListener(this);
+        halfPageAdView.setOnAdClickListener(this);
     }
 
     @Override
@@ -79,8 +88,7 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
 
         Adhese.loadAds(options, new APICallback<List<Ad>>() {
             @Override
-            public void onResponse(List<Ad> ads, Exception error) {
-
+            public void onResponse(List<Ad> ads, APIError error) {
                 if (error != null) {
                     return;
                 }
@@ -120,7 +128,8 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
         }
     }
 
-    private @Nullable Ad findByType(List<Ad> ads, String adType) {
+    @Nullable
+    private Ad findByType(List<Ad> ads, String adType) {
         for (Ad ad : ads) {
             if (ad.getAdType().equals(adType)) {
                 return ad;
@@ -131,22 +140,16 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
 
     private void showDialog() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-//        if (prev != null) {
-//            ft.remove(prev);
-//        }
         ft.addToBackStack(null);
 
-        // Create and show the dialog.
-        DialogFragment newFragment = EventViewerDialogFragment.newInstance(events);
-        newFragment.show(ft, "dialog");
+        DialogFragment fragment = EventViewerDialogFragment.newInstance(events);
+        fragment.show(ft, "dialog");
     }
 
     @Override
     public void onAdLoaded(@NonNull AdView adView) {
         String event = String.format("Slot %s was loaded", adView.getAd().getSlotName());
         events.add(event);
-//        snackbarManager.showInfo(event);
     }
 
     @Override
@@ -160,6 +163,17 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
     public void onTrackerNotified(@NonNull AdView adView) {
         String event = String.format("Slot %s tracker was called.", adView.getAd().getSlotName());
         events.add(event);
-//        snackbarManager.showInfo(event);
+    }
+
+    @Override
+    public void onError(@NonNull AdView adView, APIError error) {
+        String event = String.format("Slot %s had an error", adView.getAd().getSlotName());
+        events.add(event);
+        snackbarManager.showError(event);
+    }
+
+    @Override
+    public void onAdClicked(@NonNull AdView adView) {
+        events.add(String.format("Slot %s was clicked.", adView.getAd().getSlotName()));
     }
 }
