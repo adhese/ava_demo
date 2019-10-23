@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
     private TextView secondArticle;
     private AdView billboardAdView;
     private AdView halfPageAdView;
+    private AdheseOptions options;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
         setContentView(R.layout.activity_main);
 
         // Create the options
-        AdheseOptions options = new AdheseOptions.Builder()
+        options = new AdheseOptions.Builder()
                 .withAccount("_demo_ster_a_")
                 .forLocation("demo")
                 .addSlot("billboard")
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
     protected void onResume() {
         super.onResume();
 
-        Adhese.loadAds(new APICallback<List<Ad>>() {
+        Adhese.loadAds(options, new APICallback<List<Ad>>() {
             @Override
             public void onResponse(List<Ad> ads, Exception error) {
 
@@ -93,8 +94,7 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
         });
     }
 
-    private @Nullable
-    Ad findByType(List<Ad> ads, String adType) {
+    private @Nullable Ad findByType(List<Ad> ads, String adType) {
         for (Ad ad : ads) {
             if (ad.getAdType().equals(adType)) {
                 return ad;
