@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Adhese SDK Sample</string>
+    <string name="app_name">Adhese SDK</string>
+    <string name="show_events">Show events</string>
 </resources>

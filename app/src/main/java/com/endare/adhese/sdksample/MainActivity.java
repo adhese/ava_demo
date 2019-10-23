@@ -1,6 +1,9 @@
 package com.endare.adhese.sdksample;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -12,11 +15,14 @@ import com.endare.adhese.sdk.parameters.CookieMode;
 import com.endare.adhese.sdk.views.AdView;
 import com.thedeanda.lorem.LoremIpsum;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity implements AdView.OnAdLoadedListener, AdView.OnViewImpressionNotifiedListener, AdView.OnTrackerNotifiedListener {
 
@@ -26,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
     private AdView billboardAdView;
     private AdView halfPageAdView;
     private AdheseOptions options;
+
+    private ArrayList<String> events;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
         secondArticle.setText(LoremIpsum.getInstance().getParagraphs(3, 3));
 
         snackbarManager = new SnackbarManager(this, rootLayout);
+        events = new ArrayList<>();
 
         billboardAdView.setAdLoadedListener(this);
         billboardAdView.setTrackingNotifiedListener(this);
@@ -94,6 +103,23 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_show_events:
+                showDialog();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private @Nullable Ad findByType(List<Ad> ads, String adType) {
         for (Ad ad : ads) {
             if (ad.getAdType().equals(adType)) {
@@ -103,18 +129,37 @@ public class MainActivity extends AppCompatActivity implements AdView.OnAdLoaded
         return null;
     }
 
+    private void showDialog() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+//        if (prev != null) {
+//            ft.remove(prev);
+//        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = EventViewerDialogFragment.newInstance(events);
+        newFragment.show(ft, "dialog");
+    }
+
     @Override
     public void onAdLoaded(@NonNull AdView adView) {
-        snackbarManager.showInfo(String.format("Slot %s was loaded", adView.getAd().getSlotName()));
+        String event = String.format("Slot %s was loaded", adView.getAd().getSlotName());
+        events.add(event);
+//        snackbarManager.showInfo(event);
     }
 
     @Override
     public void onViewImpressionNotified(@NonNull AdView adView) {
-        snackbarManager.showInfo(String.format("Slot %s view impression was called.", adView.getAd().getSlotName()));
+        String event = String.format("Slot %s view impression was called.", adView.getAd().getSlotName());
+        events.add(event);
+        snackbarManager.showSuccess(event);
     }
 
     @Override
     public void onTrackerNotified(@NonNull AdView adView) {
-        snackbarManager.showInfo(String.format("Slot %s tracker was called.", adView.getAd().getSlotName()));
+        String event = String.format("Slot %s tracker was called.", adView.getAd().getSlotName());
+        events.add(event);
+//        snackbarManager.showInfo(event);
     }
 }
