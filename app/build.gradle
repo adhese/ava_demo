@@ -27,7 +27,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 //    implementation project(':sdk')
-    implementation 'com.endare.adhese:sdk:1.0.0'
+    implementation 'com.endare.adhese:sdk:1.1.0'
 
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.thedeanda:lorem:2.1'

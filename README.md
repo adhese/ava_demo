@@ -21,6 +21,6 @@ Download the SDK code and put the folder at the same level of the sample app. Th
     include ':app', 'sdk'
     project(':sdk').projectDir = new File('../adhese-sdk-android/sdk')
 
-``
+
 
 Finally, re-sync the project via Gradle.

@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements
         AdView.OnErrorListener,
         AdView.OnAdClickListener {
 
+    private static final String ADHESE_ACCOUNT = "demo";
+
     private SnackbarManager snackbarManager;
     private TextView firstArticle;
     private TextView secondArticle;
@@ -47,15 +49,14 @@ public class MainActivity extends AppCompatActivity implements
 
         // Create the options
         options = new AdheseOptions.Builder()
-                .withAccount("_demo_ster_a_")
-                .forLocation("demo")
+                .forLocation("_demo_ster_a_")
                 .addSlot("billboard")
                 .addSlot("halfpage")
                 .withCookieMode(CookieMode.ALL)
                 .build();
 
         // Init the SDK
-        Adhese.initialise(this, true);
+        Adhese.initialise(this, ADHESE_ACCOUNT, true);
 
         View rootLayout = findViewById(android.R.id.content);
         firstArticle = findViewById(R.id.firstArticle);
